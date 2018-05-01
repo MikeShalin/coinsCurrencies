@@ -1,6 +1,5 @@
 const path = require("path")
 const webpack = require('webpack')
-// const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
     entry: ["./src/index.js"],
@@ -33,7 +32,6 @@ module.exports = {
         // hot: true, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
         noInfo: true, // only errors & warns on hot reload
-        // ...
     },
     devtool:'eval-source-map'
 

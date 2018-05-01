@@ -52,22 +52,6 @@ export const coinListSelector = createSelector(
   stateSelector,
   state => state.data
 )
-// export const statusSelector = createSelector(
-//   stateSelector,
-//   state => state.status
-// )
-// export const resultSelector = createSelector(
-//   stateSelector,
-//   state => state.result
-// )
-// export const errorSelector = createSelector(
-//   stateSelector,
-//   state => state.error
-// )
-// export const fetchingSelector = createSelector(
-//   stateSelector,
-//   state => state.fetching
-// )
 
 /**
  * Action Creators
@@ -86,7 +70,6 @@ export const coinListActions = createActions({
  **/
 
 export function* requestCoinListSaga(action) {
-  console.log('в саге coinList')
   const { fetchCoinList, failureCoinList } = coinListActions[prefix],
     params = yield call(getList)
   if (params.status === 200) yield put(fetchCoinList(params.data))

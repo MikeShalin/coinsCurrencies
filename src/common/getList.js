@@ -13,5 +13,3 @@ export default () =>
 
 export const getResult = () =>
   axios.get(`https://api.coinmarketcap.com/v1/ticker/`)
-
-// https://min-api.cryptocompare.com/data/histoday?fsym=GBP&tsym=USD&limit=30&aggregate=1&e=CCCAGG

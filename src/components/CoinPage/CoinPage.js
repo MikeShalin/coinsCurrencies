@@ -133,7 +133,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   const actionsParam = coinParamsActions.coinParams
-  // actionsList = coinListActions.coinList
   return {
     requestCoinParams: params => {
       dispatch(actionsParam.requestCoinParams(params))
