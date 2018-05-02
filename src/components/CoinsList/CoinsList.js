@@ -25,6 +25,7 @@ export class CoinsList extends Component {
   componentDidMount() {
     const { requestCoinList } = this.props
     requestCoinList()
+    document.title = 'Coins list'
   }
   render() {
     const { coinList } = this.props

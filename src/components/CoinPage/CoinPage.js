@@ -61,9 +61,11 @@ const Home = styled(Link)`
 
 export class CoinPage extends Component {
   componentDidMount() {
-    const { requestCoinParams, match } = this.props,
-      params = { coin: match.params.id, convert: 'USD' }
+    const { requestCoinParams, match, location } = this.props,
+      params = { coin: match.params.id, convert: 'USD' },
+      { name, symbol, price_usd } = location.state
     requestCoinParams(params)
+    document.title = `${name} (${symbol}) - $ ${price_usd}`
   }
   commas = num => {
     const res = Math.floor(num)
@@ -74,7 +76,7 @@ export class CoinPage extends Component {
     return res.reverse().join('')
   }
   render() {
-    const { params, match, location } = this.props,
+    const { params, location } = this.props,
       {
         name,
         symbol,
