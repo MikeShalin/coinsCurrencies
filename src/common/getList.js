@@ -1,15 +1,17 @@
 import axios from 'axios'
 
+import { apiCoinsList } from 'config/apiCoinsList'
+import { success, fail } from 'config/networkStatus'
+
 export default () =>
   getResult()
-    .then(response => ({
-      status: 200,
-      data: response.data,
+    .then(({ data }) => ({
+      status: success,
+      data,
     }))
     .catch(error => ({
-      status: 500,
-      error: error,
+      status: fail,
+      error,
     }))
 
-export const getResult = () =>
-  axios.get(`https://api.coinmarketcap.com/v1/ticker/`)
+export const getResult = () => axios.get(apiCoinsList)

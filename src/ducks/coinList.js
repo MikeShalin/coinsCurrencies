@@ -1,9 +1,16 @@
-import { Record, OrderedMap } from 'immutable'
+import { Record } from 'immutable'
 import 'regenerator-runtime/runtime'
 import { createActions } from 'redux-actions'
-import { call, put, all, takeEvery } from 'redux-saga/effects'
-import getList from 'common/getList'
+import {
+  call,
+  put,
+  takeEvery,
+} from 'redux-saga/effects'
 import { createSelector } from 'reselect'
+
+import getList from 'common/getList'
+import { success, fail } from 'config/networkStatus'
+
 /**
  * Constants
  * */
@@ -50,7 +57,7 @@ export const coinListReducer = (state = new coinList(), action) => {
 export const stateSelector = state => state[moduleName]
 export const coinListSelector = createSelector(
   stateSelector,
-  state => state.data
+  state => state.data,
 )
 
 /**
@@ -70,13 +77,14 @@ export const coinListActions = createActions({
  **/
 
 export function* requestCoinListSaga(action) {
-  const { fetchCoinList, failureCoinList } = coinListActions[prefix],
-    params = yield call(getList)
-  if (params.status === 200) yield put(fetchCoinList(params.data))
-  if (params.status === 500)
+  const { fetchCoinList, failureCoinList } = coinListActions[prefix]
+  const params = yield call(getList)
+  if(params.status === success) yield put(fetchCoinList(params.data))
+  if(params.status === fail) {
     yield put(failureCoinList(params.error.toString()))
+  }
 }
 
-export const coinListSaga = function*() {
+export const coinListSaga = function* () {
   yield takeEvery(REQUEST_COIN_LIST, requestCoinListSaga)
 }

@@ -1,95 +1,67 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+
+import get from 'lodash/get'
+
 import { coinParamsActions, coinParamsSelector } from 'ducks/coinParams'
-import { Link } from 'react-router-dom'
 import Graph from 'components/Graph/'
 import CoinsList from 'components/CoinsList'
-import styled from 'styled-components'
 
-const Wrapper = styled.div`
-  display: flex
-  flex-direction: row
-  margin: 20px
-`
-
-const Title = styled.div`
-  font-size: 24px
-  margin-right: 40px
-  font-weight: 700
-`
-
-const TitleParams = styled.div`
-  font-weight: 700
-`
-
-const SubTitle = styled.div`
-  font-size: 16px
-  margin-right: 40px
-`
-
-const Symbol = styled.span`
-  color: #999
-`
-
-const PriceBTC = styled.span`
-  color: #999
-`
-
-const USDContainer = styled.div`
-  display: flex
-  align-items: flex-end
-`
-
-const PriceUSD = styled.div`
-  font-size: 20px
-  font-weight: 700
-  margin-right: 3px
-`
-
-const ListParams = styled.div`
-  display: flex
-  width: 60%
-  justify-content: space-around
-`
-const Home = styled(Link)`
-  color: #000
-  text-decoration: none
-  &:hover {
-    text-decoration: underline
-  }
-`
+import {
+  Wrapper,
+  Title,
+  TitleParams,
+  SubTitle,
+  Symbol,
+  PriceBTC,
+  USDContainer,
+  PriceUSD,
+  ListParams,
+  Home,
+} from './styled'
 
 export class CoinPage extends Component {
   componentDidMount() {
-    const { requestCoinParams, match, location } = this.props,
-      params = { coin: match.params.id, convert: 'USD' },
-      { name, symbol, price_usd } = location.state
+    const {
+      requestCoinParams,
+      match,
+      location,
+    } = this.props
+    const params = { coin: match.params.id, convert: 'USD' }
+    const { name, symbol, price_usd } = location.state
     requestCoinParams(params)
     document.title = `${name} (${symbol}) - $ ${price_usd}`
   }
-  commas = num => {
-    const res = Math.floor(num)
+  
+  getPrice = (el, i) => (i !== 0 && i % 3 === 0 ? `${el}, ` : el)
+  
+  commas = num => (
+    Math.floor(num)
       .toString()
       .split('')
       .reverse()
-      .map((el, i) => (i !== 0 && i % 3 === 0 ? `${el}, ` : el))
-    return res.reverse().join('')
-  }
+      .map(this.getPrice)
+      .reverse()
+      .join('')
+  )
+  
   render() {
-    const { params, location } = this.props,
-      {
-        name,
-        symbol,
-        price_usd,
-        price_btc,
-        percent_change_24h,
-      } = location.state
+    const { params, location } = this.props
+    const {
+      name,
+      symbol,
+      price_usd,
+      price_btc,
+      percent_change_24h,
+      market_cap_usd,
+      available_supply,
+    } = location.state
     const newState = Object.assign({}, ...location.state, {
-      'Market Cap': location.state.market_cap_usd,
-      'Volume (24h)': location.state['24h_volume_usd'],
-      'Circulating Supply': location.state.available_supply,
+      'Market Cap': market_cap_usd,
+      'Volume (24h)': get(location,  'state.24h_volume_usd', ''),
+      'Circulating Supply': available_supply,
     })
-
+    
     return (
       <div>
         <Wrapper>
@@ -108,11 +80,11 @@ export class CoinPage extends Component {
             </PriceBTC>
           </SubTitle>
           <ListParams>
-            {Object.entries(newState).map((el, i) => (
+            {Object.entries(newState).map(([title, price], i) => (
               <div key={i}>
-                <TitleParams>{el[0]}</TitleParams>
+                <TitleParams>{title}</TitleParams>
                 <div>
-                  $ {this.commas(el[1])} {i !== 2 ? 'USD' : symbol}
+                  $ {this.commas(price)} {i !== 2 ? 'USD' : symbol}
                 </div>
               </div>
             ))}
@@ -127,11 +99,9 @@ export class CoinPage extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    params: coinParamsSelector(state),
-  }
-}
+const mapStateToProps = state => ({
+  params: coinParamsSelector(state),
+})
 
 const mapDispatchToProps = dispatch => {
   const actionsParam = coinParamsActions.coinParams

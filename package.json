@@ -19,6 +19,7 @@
     "husky": "^0.14.3",
     "immutable": "^3.8.2",
     "lint-staged": "^7.0.4",
+    "lodash": "^4.17.15",
     "pretty-quick": "^1.4.1",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
@@ -38,7 +39,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --hot --inline",
     "server": "node server.js",
     "test": "jest",
     "pretty": " prettier --single-quote --trailing-comma es5 --write \"src/**/*.js\""

@@ -1,0 +1,1 @@
+export const apiCoinsList = 'https://api.coinmarketcap.com/v1/ticker/'

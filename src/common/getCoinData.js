@@ -1,24 +1,43 @@
 import axios from 'axios'
+import get from 'lodash/get'
 
-export default (coin, convert, limit, aggregate, e) =>
-  getResult(coin, convert, limit, aggregate, e)
-    .then(response => ({
-      status: 200,
-      data: response.data.Data,
+import {
+  apiCoinData,
+  defaultLimit,
+  defaultAggr,
+  defaultColor
+} from 'config/apiCoinData'
+import { success, fail } from 'config/networkStatus'
+
+export default (
+  coin,
+  convert,
+  limit,
+  aggregate,
+) =>
+  getResult(
+    coin,
+    convert,
+    limit,
+    aggregate,
+  )
+    .then(({ data }) => ({
+      status: success,
+      data: get(data, 'Data'),
     }))
     .catch(error => ({
-      status: 500,
-      error: error,
+      status: fail,
+      error,
     }))
 
 export const getResult = (
   coin,
   convert,
-  limit = 30,
-  aggregate = 1,
-  e = 'CCCAGG'
+  limit = defaultLimit,
+  aggregate = defaultAggr,
+  e = defaultColor,
 ) =>
-  axios.get(`https://min-api.cryptocompare.com/data/histoday?`, {
+  axios.get(apiCoinData, {
     params: {
       fsym: coin,
       tsym: convert,

@@ -1,9 +1,16 @@
-import { Record, OrderedMap } from 'immutable'
+import { Record } from 'immutable'
 import 'regenerator-runtime/runtime'
 import { createActions } from 'redux-actions'
-import { call, put, all, takeEvery } from 'redux-saga/effects'
-import getParams from 'common/getCoinData'
+import {
+  call,
+  put,
+  takeEvery,
+} from 'redux-saga/effects'
 import { createSelector } from 'reselect'
+
+import getParams from 'common/getCoinData'
+import { success, fail } from 'config/networkStatus'
+
 /**
  * Constants
  * */
@@ -50,7 +57,7 @@ export const coinParamsReducer = (state = new coinParams(), action) => {
 export const stateSelector = state => state[moduleName]
 export const coinParamsSelector = createSelector(
   stateSelector,
-  state => state.data
+  state => state.data,
 )
 
 /**
@@ -69,28 +76,34 @@ export const coinParamsActions = createActions({
  * Sagas
  **/
 
+const getCurrentTime = (time) => time < 10 ? `0${time}` : time
+
 const Unix_timestamp = t => {
-  const date = new Date(t * 1000),
-    day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate(),
-    month = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth()
+  const date = new Date(t * 1000)
+  const day = getCurrentTime(date.getDate())
+  const month = getCurrentTime(date.getMonth())
   return `${day}.${month}`
 }
 
 export function* requestCoinParamsSaga(action) {
-  const { coin, convert } = action.payload,
-    { fetchCoinParams, failureCoinParams } = coinParamsActions[prefix],
-    params = yield call(getParams, coin, convert)
-
-  const data = params.data.map(el => ({
-    ...el,
-    time: Unix_timestamp(el.time),
-  }))
-
-  if (params.status === 200) yield put(fetchCoinParams(data))
-  if (params.status === 500)
+  const { coin, convert } = action.payload
+  const { fetchCoinParams, failureCoinParams } = coinParamsActions[prefix]
+  const params = yield call(getParams, coin, convert)
+  console.log('lolparams', params)
+  
+  if(params.status === success) {
+    const data = params.data.map(el => ({
+      ...el,
+      time: Unix_timestamp(el.time),
+    }))
+  
+    yield put(fetchCoinParams(data))
+  }
+  if(params.status === fail) {
     yield put(failureCoinParams(params.error.toString()))
+  }
 }
 
-export const coinParamsSaga = function*() {
+export const coinParamsSaga = function* () {
   yield takeEvery(REQUEST_COIN_PARAMS, requestCoinParamsSaga)
 }

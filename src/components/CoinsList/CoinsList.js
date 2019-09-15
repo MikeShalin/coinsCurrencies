@@ -6,18 +6,23 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
 const List = styled.ul`
-  list-style: none
+  list-style: none;
+`
+
+const MainWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 const ListItem = styled.li`
-  margin-bottom: 5px
+  margin-bottom: 5px;
 `
 
 const CoinLink = styled(Link)`
-  color: #000
-  text-decoration: none
+  color: #000;
+  text-decoration: none;
   &:hover {
-    border-bottom: 1px solid black
+    border-bottom: 1px solid black;
   }
 `
 
@@ -27,10 +32,14 @@ export class CoinsList extends Component {
     requestCoinList()
     document.title = 'Coins list'
   }
+  
   render() {
     const { coinList } = this.props
     return (
-      <div>
+      <MainWrapper>
+        <span>
+          Select the coin:
+        </span>
         <List>
           {coinList.map((coin, i) => (
             <ListItem key={i}>
@@ -43,21 +52,19 @@ export class CoinsList extends Component {
             </ListItem>
           ))}
         </List>
-      </div>
+      </MainWrapper>
     )
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    coinList: coinListSelector(state),
-  }
-}
+const mapStateToProps = state => ({
+  coinList: coinListSelector(state),
+})
 
 const mapDispatchToProps = dispatch => {
   const actionsList = coinListActions.coinList
   return {
-    requestCoinList: params => {
+    requestCoinList: () => {
       dispatch(actionsList.requestCoinList())
     },
   }
